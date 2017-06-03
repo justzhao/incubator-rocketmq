@@ -26,6 +26,7 @@ import org.apache.rocketmq.remoting.common.RemotingHelper;
 
 public class TestProducer {
     public static void main(String[] args) throws MQClientException, InterruptedException {
+        // test
         DefaultMQProducer producer = new DefaultMQProducer("ProducerGroupName");
         producer.start();
 
