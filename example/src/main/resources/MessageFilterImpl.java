@@ -23,6 +23,8 @@ import org.apache.rocketmq.common.message.MessageExt;
 
 public class MessageFilterImpl implements MessageFilter {
 
+    //test
+
     @Override
     public boolean match(MessageExt msg, FilterContext context) {
         String property = msg.getProperty("SequenceId");
