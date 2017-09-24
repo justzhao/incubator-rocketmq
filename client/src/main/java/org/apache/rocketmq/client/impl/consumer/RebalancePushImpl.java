@@ -16,9 +16,6 @@
  */
 package org.apache.rocketmq.client.impl.consumer;
 
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import org.apache.rocketmq.client.consumer.AllocateMessageQueueStrategy;
 import org.apache.rocketmq.client.consumer.store.OffsetStore;
 import org.apache.rocketmq.client.consumer.store.ReadOffsetType;
@@ -32,6 +29,12 @@ import org.apache.rocketmq.common.protocol.heartbeat.ConsumeType;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
 
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+
+// 负载均衡服务，创建pullRequest的类
 public class RebalancePushImpl extends RebalanceImpl {
     private final static long UNLOCK_DELAY_TIME_MILLS = Long.parseLong(System.getProperty("rocketmq.client.unlockDelayTimeMills", "20000"));
     private final DefaultMQPushConsumerImpl defaultMQPushConsumerImpl;
@@ -117,11 +120,21 @@ public class RebalancePushImpl extends RebalanceImpl {
         this.defaultMQPushConsumerImpl.getOffsetStore().removeOffset(mq);
     }
 
+    // 计算开始拉取的位置
     @Override
     public long computePullFromWhere(MessageQueue mq) {
         long result = -1;
         final ConsumeFromWhere consumeFromWhere = this.defaultMQPushConsumerImpl.getDefaultMQPushConsumer().getConsumeFromWhere();
         final OffsetStore offsetStore = this.defaultMQPushConsumerImpl.getOffsetStore();
+        /**
+         *   消费记录的offset，如果此mq已经被消费过，broker端就会记录 此mq的消费记录
+         *   如果此mq是第一次被消费就，有三种策略:
+         *   CONSUME_FROM_LAST_OFFSET : 从mq的最后的位置开始消费
+         *   CONSUME_FROM_FIRST_OFFSET: 从队列开始的位置消费
+         *   CONSUME_FROM_TIMESTAMP: 从指定时间点开始消费
+         *
+          */
+
         switch (consumeFromWhere) {
             case CONSUME_FROM_LAST_OFFSET_AND_FROM_MIN_WHEN_BOOT_FIRST:
             case CONSUME_FROM_MIN_OFFSET:

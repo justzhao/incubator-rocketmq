@@ -16,17 +16,16 @@
  */
 package org.apache.rocketmq.client.impl.consumer;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import org.apache.rocketmq.client.impl.factory.MQClientInstance;
 import org.apache.rocketmq.client.log.ClientLogger;
 import org.apache.rocketmq.common.ServiceThread;
 import org.apache.rocketmq.common.utils.ThreadUtils;
 import org.slf4j.Logger;
 
+import java.util.concurrent.*;
+
+//PushMessage 的底层是由PullMessageService实现的
+//   PullMessageService  从 pullRequestQueue  获取request 去 从broker 拉取消息。
 public class PullMessageService extends ServiceThread {
     private final Logger log = ClientLogger.getLog();
     private final LinkedBlockingQueue<PullRequest> pullRequestQueue = new LinkedBlockingQueue<PullRequest>();
