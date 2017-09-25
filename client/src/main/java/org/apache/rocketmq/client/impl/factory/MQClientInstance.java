@@ -214,7 +214,8 @@ public class MQClientInstance {
                     // 启动拉取服务
                     this.pullMessageService.start();
                     // Start rebalance service
-                    // 平衡服务
+                    // 启动负载均衡服务
+                    // 作用是rebalance服务根据不同的mq创建pullRequest
                     this.rebalanceService.start();
                     // Start push service
                     this.defaultMQProducer.getDefaultMQProducerImpl().start(false);
@@ -305,7 +306,7 @@ public class MQClientInstance {
     public void updateTopicRouteInfoFromNameServer() {
         Set<String> topicList = new HashSet<String>();
 
-        // Consumer
+        // 每个分组对应的MQConsumerInner
         {
             Iterator<Entry<String, MQConsumerInner>> it = this.consumerTable.entrySet().iterator();
             while (it.hasNext()) {
@@ -925,6 +926,7 @@ public class MQClientInstance {
         this.rebalanceService.wakeup();
     }
 
+    // 在当前jvm中，一个group 一个consumer
     public void doRebalance() {
         for (Map.Entry<String, MQConsumerInner> entry : this.consumerTable.entrySet()) {
             MQConsumerInner impl = entry.getValue();

@@ -267,9 +267,9 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
                 if (pullResult != null) {
                     pullResult = DefaultMQPushConsumerImpl.this.pullAPIWrapper.processPullResult(pullRequest.getMessageQueue(), pullResult,
                         subscriptionData);
-
+                    // 根据拉取消息的结果状态，做不同的操作
                     switch (pullResult.getPullStatus()) {
-                        case FOUND:
+                        case FOUND: // 如果拉取到了，进行下次拉取
                             long prevRequestOffset = pullRequest.getNextOffset();
                             pullRequest.setNextOffset(pullResult.getNextBeginOffset());
                             long pullRT = System.currentTimeMillis() - beginTimestamp;
@@ -582,7 +582,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
 
                 // 消费service，-》拉取的消息全部被他处理
                 this.consumeMessageService.start();
-
+                 // 注册consumerTable Group->consumer
                 boolean registerOK = mQClientFactory.registerConsumer(this.defaultMQPushConsumer.getConsumerGroup(), this);
                 if (!registerOK) {
                     this.serviceState = ServiceState.CREATE_JUST;
