@@ -626,7 +626,8 @@ public class BrokerController {
         if (this.pullRequestHoldService != null) {
             this.pullRequestHoldService.start();
         }
-
+        // 维护客户端状态的信息，
+        // 比如当有consumer挂了之后，可以剔除。
         if (this.clientHousekeepingService != null) {
             this.clientHousekeepingService.start();
         }
