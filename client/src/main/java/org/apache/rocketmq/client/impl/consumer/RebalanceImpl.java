@@ -276,7 +276,7 @@ public abstract class RebalanceImpl {
                     Collections.sort(cidAll);
 
                     AllocateMessageQueueStrategy strategy = this.allocateMessageQueueStrategy;
-
+                    // 分配MessageQueue给当前的consumer
                     List<MessageQueue> allocateResult = null;
                     try {
                         allocateResult = strategy.allocate(

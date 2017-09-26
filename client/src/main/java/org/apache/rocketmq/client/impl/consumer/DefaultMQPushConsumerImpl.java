@@ -269,7 +269,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
                         subscriptionData);
                     // 根据拉取消息的结果状态，做不同的操作
                     switch (pullResult.getPullStatus()) {
-                        case FOUND: // 如果拉取到了，进行下次拉取
+                        case FOUND: // 如果拉取到了，记住offset。进行下次拉取
                             long prevRequestOffset = pullRequest.getNextOffset();
                             pullRequest.setNextOffset(pullResult.getNextBeginOffset());
                             long pullRT = System.currentTimeMillis() - beginTimestamp;
@@ -285,6 +285,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
                                 DefaultMQPushConsumerImpl.this.getConsumerStatsManager().incPullTPS(pullRequest.getConsumerGroup(),
                                     pullRequest.getMessageQueue().getTopic(), pullResult.getMsgFoundList().size());
 
+                                // 消费拉回来的消息
                                 boolean dispathToConsume = processQueue.putMessage(pullResult.getMsgFoundList());
                                 DefaultMQPushConsumerImpl.this.consumeMessageService.submitConsumeRequest(
                                     pullResult.getMsgFoundList(),
