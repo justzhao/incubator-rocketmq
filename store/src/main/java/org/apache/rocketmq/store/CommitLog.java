@@ -667,6 +667,9 @@ public class CommitLog {
                     //request 放到HaService
                     service.putRequest(request);
                     service.getWaitNotifyObject().wakeupAll();
+                    // 根据 消息的offset 是否已经被slave同步了 来判断slave是否已经落盘
+                    // 只有slave节点，落盘成功了，才算真正的落盘
+                    // 否则putResult的状态会改变
                     boolean flushOK =
                         request.waitForFlush(this.defaultMessageStore.getMessageStoreConfig().getSyncFlushTimeout());
                     if (!flushOK) {

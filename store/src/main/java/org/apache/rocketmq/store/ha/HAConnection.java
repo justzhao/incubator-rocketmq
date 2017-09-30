@@ -28,7 +28,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-//master和slave之间的连接
+//master和slave之间的连接,保存在master 节点。
 public class HAConnection {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
     private final HAService haService;
@@ -45,6 +45,7 @@ public class HAConnection {
     public HAConnection(final HAService haService, final SocketChannel socketChannel) throws IOException {
         this.haService = haService;
         this.socketChannel = socketChannel;
+        // 来自client的地址
         this.clientAddr = this.socketChannel.socket().getRemoteSocketAddress().toString();
         this.socketChannel.configureBlocking(false);
         this.socketChannel.socket().setSoLinger(false, -1);
@@ -57,6 +58,7 @@ public class HAConnection {
     }
 
     public void start() {
+        // master节点对socket读写服务。
         this.readSocketService.start();
         this.writeSocketService.start();
     }
