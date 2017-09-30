@@ -147,7 +147,7 @@ public class HAConnection {
         public String getServiceName() {
             return ReadSocketService.class.getSimpleName();
         }
-
+        // 读事件
         private boolean processReadEvent() {
             int readSizeZeroTimes = 0;
 
@@ -172,7 +172,7 @@ public class HAConnection {
                                 HAConnection.this.slaveRequestOffset = readOffset;
                                 log.info("slave[" + HAConnection.this.clientAddr + "] request offset " + readOffset);
                             }
-
+                            //slave 发过来的ack 表示已经 同步的offset，然后更新
                             HAConnection.this.haService.notifyTransferSome(HAConnection.this.slaveAckOffset);
                         }
                     } else if (readSize == 0) {

@@ -23,6 +23,7 @@ public class AppendMessageResult {
     // Return code
     private AppendMessageStatus status;
     // Where to start writing
+    // 开始写的offset
     private long wroteOffset;
     // Write Bytes
     private int wroteBytes;

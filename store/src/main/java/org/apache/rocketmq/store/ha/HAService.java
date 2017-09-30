@@ -83,6 +83,7 @@ public class HAService {
         return result;
     }
 
+    // 更新 push2SlaveMaxOffset
     public void notifyTransferSome(final long offset) {
         for (long value = this.push2SlaveMaxOffset.get(); offset > value; ) {
             boolean ok = this.push2SlaveMaxOffset.compareAndSet(value, offset);
@@ -255,10 +256,12 @@ public class HAService {
         private volatile List<CommitLog.GroupCommitRequest> requestsWrite = new ArrayList<>();
         private volatile List<CommitLog.GroupCommitRequest> requestsRead = new ArrayList<>();
 
+        // cmomitLog落盘后，发出的request
         public synchronized void putRequest(final CommitLog.GroupCommitRequest request) {
             synchronized (this.requestsWrite) {
                 this.requestsWrite.add(request);
             }
+            // 有request了，通知下
             if (hasNotified.compareAndSet(false, true)) {
                 waitPoint.countDown(); // notify
             }
@@ -273,11 +276,12 @@ public class HAService {
             this.requestsWrite = this.requestsRead;
             this.requestsRead = tmp;
         }
-
+         // 开始处理request
         private void doWaitTransfer() {
             synchronized (this.requestsRead) {
                 if (!this.requestsRead.isEmpty()) {
                     for (CommitLog.GroupCommitRequest req : this.requestsRead) {
+                        // 如果 push2SlaveMaxOffset大于req的offset 说明已经成功transfer了。否则重试五次
                         boolean transferOK = HAService.this.push2SlaveMaxOffset.get() >= req.getNextOffset();
                         for (int i = 0; !transferOK && i < 5; i++) {
                             this.notifyTransferObject.waitForRunning(1000);
@@ -287,7 +291,7 @@ public class HAService {
                         if (!transferOK) {
                             log.warn("transfer messsage to slave timeout, " + req.getNextOffset());
                         }
-
+                         //req 处理成功
                         req.wakeupCustomer(transferOK);
                     }
 

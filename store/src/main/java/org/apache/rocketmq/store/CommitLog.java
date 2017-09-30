@@ -660,9 +660,11 @@ public class CommitLog {
             // 如果本掉消息已经成功落盘
             if (messageExt.isWaitStoreMsgOK()) {
                 // Determine whether to wait
-                // slave 落后的
+                // slave 节点如果能同步，offset 合适
                 if (service.isSlaveOK(result.getWroteOffset() + result.getWroteBytes())) {
                     GroupCommitRequest request = new GroupCommitRequest(result.getWroteOffset() + result.getWroteBytes());
+
+                    //request 放到HaService
                     service.putRequest(request);
                     service.getWaitNotifyObject().wakeupAll();
                     boolean flushOK =
