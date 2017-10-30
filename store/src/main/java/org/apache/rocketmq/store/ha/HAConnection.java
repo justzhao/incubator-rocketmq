@@ -110,7 +110,7 @@ public class HAConnection {
                         HAConnection.log.error("processReadEvent error");
                         break;
                     }
-
+                    // 读的时间间隔，
                     long interval = HAConnection.this.haService.getDefaultMessageStore().getSystemClock().now() - this.lastReadTimestamp;
                     if (interval > HAConnection.this.haService.getDefaultMessageStore().getMessageStoreConfig().getHaHousekeepingInterval()) {
                         log.warn("ha housekeeping, found this connection[" + HAConnection.this.clientAddr + "] expired, " + interval);
@@ -166,6 +166,7 @@ public class HAConnection {
                         this.lastReadTimestamp = HAConnection.this.haService.getDefaultMessageStore().getSystemClock().now();
                         if ((this.byteBufferRead.position() - this.processPostion) >= 8) {
                             int pos = this.byteBufferRead.position() - (this.byteBufferRead.position() % 8);
+                            //
                             long readOffset = this.byteBufferRead.getLong(pos - 8);
                             this.processPostion = pos;
 
@@ -246,7 +247,7 @@ public class HAConnection {
                         log.info("master transfer data from " + this.nextTransferFromWhere + " to slave[" + HAConnection.this.clientAddr
                             + "], and slave request " + HAConnection.this.slaveRequestOffset);
                     }
-
+                        // 调用transferData 传输数据到slave
                     if (this.lastWriteOver) {
 
                         long interval =

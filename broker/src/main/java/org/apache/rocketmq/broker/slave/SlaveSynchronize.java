@@ -48,7 +48,7 @@ public class SlaveSynchronize {
     }
 
     public void syncAll() {
-        this.syncTopicConfig(); // 从master获取topic信心
+        this.syncTopicConfig(); // 从master获取topic信息
         this.syncConsumerOffset(); // 从master获取消费进度
         this.syncDelayOffset();// 从master获取延迟消息进度
         this.syncSubscriptionGroupConfig(); // 从master获取消费者分组信息.

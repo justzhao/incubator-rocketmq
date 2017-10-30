@@ -326,6 +326,8 @@ public class HAService {
         }
     }
 
+
+    // slave 节点发起请求
     class HAClient extends ServiceThread {
         private static final int READ_MAX_BUFFER_SIZE = 1024 * 1024 * 4;
         private final AtomicReference<String> masterAddress = new AtomicReference<>();
@@ -359,7 +361,7 @@ public class HAService {
 
             return needHeart;
         }
-
+        // 向master节点报告当前同步的offset
         private boolean reportSlaveMaxOffset(final long maxOffset) {
             this.reportOffset.position(0);
             this.reportOffset.limit(8);
@@ -402,7 +404,7 @@ public class HAService {
             this.byteBufferRead = this.byteBufferBackup;
             this.byteBufferBackup = tmp;
         }
-
+        // 从master节点读取的commitLog
         private boolean processReadEvent() {
             int readSizeZeroTimes = 0;
             while (this.byteBufferRead.hasRemaining()) {
